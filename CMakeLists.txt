@@ -92,6 +92,13 @@ if(USE_XVFB)
     endif()
 endif()
 
+IF(ISL_QT_NAMESPACE)
+    add_definitions(-DQT_NAMESPACE=${ISL_QT_NAMESPACE})
+ENDIF()
+IF(ISL_QT_NAMESPACE_MAC_CRC)
+    add_definitions(-DQT_NAMESPACE_MAC_CRC=${ISL_QT_NAMESPACE_MAC_CRC})
+ENDIF()
+
 option(BUILD_TESTS "Build tests." TRUE)
 option(ENABLE_VERSION_SUFFIX "Used to use current version in suffix to generated files. This is used to allow multiples versions installed simultaneous." FALSE)
 set(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )

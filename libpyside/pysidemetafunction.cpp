@@ -89,7 +89,7 @@ PyTypeObject PySideMetaFunctionType = {
     /*tp_methods*/          0,
     /*tp_members*/          0,
     /*tp_getset*/           0,
-    /*tp_base*/             0,
+    /*tp_base*/             &PyType_Type,
     /*tp_dict*/             0,
     /*tp_descr_get*/        0,
     /*tp_descr_set*/        0,
@@ -133,6 +133,7 @@ void init(PyObject* module)
     if (PyType_Ready(&PySideMetaFunctionType) < 0)
         return;
 
+    Py_INCREF(&PySideMetaFunctionType);
     PyModule_AddObject(module, "MetaFunction", reinterpret_cast<PyObject *>(&PySideMetaFunctionType));
 }
 
