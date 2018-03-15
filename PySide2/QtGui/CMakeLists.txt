@@ -202,5 +202,5 @@ create_pyside_module(QtGui
                      QPYTEXTOBJECT_MOC
                      ${QtGui_BINARY_DIR}/typesystem_gui.xml)
 
-install(FILES ${pyside2_SOURCE_DIR}/qpytextobject.h DESTINATION include/PySide2/QtGui/)
+install(FILES ${pyside2_SOURCE_DIR}/qpytextobject.h DESTINATION ${ISL_PYSIDE_INCLUDE_DIR}/PySide2/QtGui/)
 
