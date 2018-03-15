@@ -1,5 +1,12 @@
 project(libpyside)
 
+if(ISL_QT_NAMESPACE)
+    add_definitions(-DQT_NAMESPACE=${ISL_QT_NAMESPACE})
+endif()
+if(ISL_QT_NAMESPACE_MAC_CRC)
+    add_definitions(-DQT_NAMESPACE_MAC_CRC=${ISL_QT_NAMESPACE_MAC_CRC})
+endif()
+
 if(${Qt5Qml_FOUND})
     if(NOT "${Qt5Qml_PRIVATE_INCLUDE_DIRS}" MATCHES "/QtQml/")
         string(REPLACE "/QtCore" "/QtQml" replaceme "${Qt5Core_PRIVATE_INCLUDE_DIRS}")
@@ -103,9 +110,7 @@ set_target_properties(pyside2 PROPERTIES
                       OUTPUT_NAME "pyside2${pyside2_SUFFIX}${SHIBOKEN_PYTHON_SHARED_LIBRARY_SUFFIX}"
                       DEFINE_SYMBOL PYSIDE_EXPORTS)
 
-if(Qt5Core_VERSION VERSION_GREATER "5.7.1")
-    set_property(TARGET pyside2 PROPERTY CXX_STANDARD 11)
-endif()
+set_property(TARGET pyside2 PROPERTY CXX_STANDARD 14)
 
 if(QML_SUPPORT)
     target_compile_definitions(pyside2 PUBLIC PYSIDE_QML_SUPPORT=1)
@@ -157,7 +162,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/PySide2ConfigVersion.cmake.in"
                "${CMAKE_CURRENT_BINARY_DIR}/PySide2ConfigVersion.cmake" @ONLY)
 
 install(FILES ${libpyside_HEADERS}
-        DESTINATION include/${BINDING_NAME}${pyside2_SUFFIX})
+        DESTINATION ${ISL_PYSIDE_INCLUDE_DIR}/${BINDING_NAME}${pyside2_SUFFIX})
 install(TARGETS pyside2 EXPORT pyside2
                         LIBRARY DESTINATION "${LIB_INSTALL_DIR}"
                         ARCHIVE DESTINATION "${LIB_INSTALL_DIR}"

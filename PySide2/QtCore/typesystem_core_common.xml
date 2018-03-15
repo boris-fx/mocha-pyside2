@@ -2443,7 +2443,7 @@
         </inject-code>
     </add-function>
   </value-type>
-  <value-type name="QByteArray" hash-function="qHash">
+  <value-type name="QByteArray" hash-function="qHash" default-constructor="QByteArray()">
     <enum-type name="Base64Option" flags="Base64Options" since="5.2"/>
     <conversion-rule>
         <target-to-native>

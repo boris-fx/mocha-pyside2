@@ -11,15 +11,71 @@ project(pysidebindings)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Macros/
                       ${CMAKE_MODULE_PATH})
 
-option(USE_PYTHON_VERSION "Use specific python version to build pyside2." "")
-
-if (USE_PYTHON_VERSION)
-    find_package(PythonInterp ${USE_PYTHON_VERSION} REQUIRED)
-    find_package(PythonLibs ${USE_PYTHON_VERSION} REQUIRED)
+if(CMAKE_BUILD_TYPE)
+    string(TOLOWER "${CMAKE_BUILD_TYPE}" ISL_BUILD_TYPE)
 else()
-    find_package(PythonInterp 2.6)
-    find_package(PythonLibs 2.6)
+    set(ISL_BUILD_TYPE "debug")
 endif()
+
+if(NOT ISL_QT_ROOT_DIR)
+    message(FATAL_ERROR "ISL_QT_ROOT_DIR is not set")
+endif()
+
+if(NOT ISL_DEPENDENCIES_ROOT)
+    set(ISL_DEPENDENCIES_ROOT "../")
+    message(WARNING "ISL_DEPENDENCIES_ROOT isn't set. Assuming ${ISL_DEPENDENCIES_ROOT}")
+endif()
+
+if(NOT ISL_LINKAGE_MODE_TOKEN)
+    set(ISL_LINKAGE_MODE_TOKEN "shared")
+    message(WARNING "ISL_LINKAGE_MODE_TOKEN isn't set. Assuming ${ISL_LINKAGE_MODE_TOKEN}")
+endif()
+
+# Python definitions
+set(PYTHON_DIRECTORY "${ISL_DEPENDENCIES_ROOT}/python/${ISL_PYTHON_VERSION}/${ISL_TARGET_OS}/${ISL_BUILD_TYPE}/${ISL_LINKAGE_MODE_TOKEN}")
+if(NOT EXISTS ${PYTHON_DIRECTORY})
+   message(FATAL_ERROR "${PYTHON_DIRECTORY} does not exist")
+endif()
+
+# Unfortunately, FIND_FILE/FIND_PATH are non-recursive functions
+find_path(PYTHON_INCLUDE_PATH
+     Python.h
+     PATHS "${PYTHON_DIRECTORY}/include"
+     NO_SYSTEM_ENVIRONMENT_PATH
+)
+
+file(GLOB_RECURSE _python_h_file "${PYTHON_DIRECTORY}/include/*Python.h")
+get_filename_component(PYTHON_INCLUDE_PATH ${_python_h_file} PATH)
+
+if(NOT EXISTS ${PYTHON_INCLUDE_PATH})
+    message(FATAL_ERROR "Can't find Python.h file in directory ${PYTHON_DIRECTORY}/include")
+endif()
+
+set(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_PATH})
+
+string(REGEX REPLACE "^([0-9]+)\\.[0-9]+\\.[0-9]+$" "\\1" PYTHON_VERSION_MAJOR "${ISL_PYTHON_VERSION}")
+string(REGEX REPLACE "^[0-9]+\\.([0-9]+)\\.[0-9]+$" "\\1" PYTHON_VERSION_MINOR "${ISL_PYTHON_VERSION}")
+string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+)$" "\\1" PYTHON_VERSION_PATCH "${ISL_PYTHON_VERSION}")
+set(PYTHON_SUFFIX "-python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
+
+find_library(PYTHON_LIBRARIES
+    NAMES "python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}" 
+    "python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}" "python"
+    PATHS "${PYTHON_DIRECTORY}/lib"
+    NO_DEFAULT_PATH)
+find_program(PYTHON_EXECUTABLE
+    NAMES "python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}" 
+    "python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}" "python" 
+    PATHS "${PYTHON_DIRECTORY}/bin"
+    NO_SYSTEM_ENVIRONMENT_PATH NO_DEFAULT_PATH)
+set(PYTHON_DEBUG_LIBRARIES ${PYTHON_LIBRARIES})
+
+## For debugging the PYTHON* variables
+message(STATUS "PYTHON_LIBRARIES: " ${PYTHON_LIBRARIES})
+message(STATUS "PYTHON_INCLUDE_DIRS: " ${PYTHON_INCLUDE_DIRS})
+message(STATUS "PYTHON_DEBUG_LIBRARIES: " ${PYTHON_DEBUG_LIBRARIES})
+message(STATUS "PYTHON_EXECUTABLE: " ${PYTHON_EXECUTABLE})
+message(STATUS "PYTHON_VERSION: " ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH})
 
 macro(get_python_extension_suffix)
   # Result of imp.get_suffixes() depends on the platform, but generally looks something like:
@@ -92,15 +148,15 @@ if(USE_XVFB)
     endif()
 endif()
 
-IF(ISL_QT_NAMESPACE)
+if(ISL_QT_NAMESPACE)
     add_definitions(-DQT_NAMESPACE=${ISL_QT_NAMESPACE})
-ENDIF()
-IF(ISL_QT_NAMESPACE_MAC_CRC)
+endif()
+if(ISL_QT_NAMESPACE_MAC_CRC)
     add_definitions(-DQT_NAMESPACE_MAC_CRC=${ISL_QT_NAMESPACE_MAC_CRC})
-ENDIF()
+endif()
 
-option(BUILD_TESTS "Build tests." TRUE)
-option(ENABLE_VERSION_SUFFIX "Used to use current version in suffix to generated files. This is used to allow multiples versions installed simultaneous." FALSE)
+option(BUILD_TESTS "Build tests." FALSE)
+option(ENABLE_VERSION_SUFFIX "Use the current version suffix for generated files to allow multiple versions to be installed simultaneously." FALSE)
 set(LIB_SUFFIX "" CACHE STRING "Define suffix of directory name (32/64)" )
 set(LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}" CACHE PATH "The subdirectory relative to the install prefix where libraries will be installed (default is /lib${LIB_SUFFIX})" FORCE)
 if(CMAKE_HOST_APPLE)
@@ -262,53 +318,13 @@ endmacro()
 # note: the order of this list is relevant for dependencies.
 # For instance: Qt5Printsupport must come before Qt5WebKitWidgets.
 COLLECT_MODULE_IF_FOUND(Core)
+COLLECT_MODULE_IF_FOUND(Concurrent essential)
 COLLECT_MODULE_IF_FOUND(Gui essential)
 COLLECT_MODULE_IF_FOUND(Widgets essential)
-COLLECT_MODULE_IF_FOUND(PrintSupport essential)
-COLLECT_MODULE_IF_FOUND(Sql essential)
 COLLECT_MODULE_IF_FOUND(Network essential)
-COLLECT_MODULE_IF_FOUND(Test essential)
-COLLECT_MODULE_IF_FOUND(Concurrent essential)
-if(UNIX AND NOT APPLE)
-    COLLECT_MODULE_IF_FOUND(X11Extras essential)
-endif()
-if(WIN32)
-    COLLECT_MODULE_IF_FOUND(WinExtras essential)
-endif()
-if(APPLE)
-    COLLECT_MODULE_IF_FOUND(MacExtras essential)
-endif()
 COLLECT_MODULE_IF_FOUND(Xml)
-COLLECT_MODULE_IF_FOUND(XmlPatterns opt)
-COLLECT_MODULE_IF_FOUND(Help opt)
-COLLECT_MODULE_IF_FOUND(Multimedia opt)
-COLLECT_MODULE_IF_FOUND(MultimediaWidgets opt)
-COLLECT_MODULE_IF_FOUND(OpenGL opt)
-COLLECT_MODULE_IF_FOUND(Qml opt)
-COLLECT_MODULE_IF_FOUND(Quick opt)
-COLLECT_MODULE_IF_FOUND(QuickWidgets opt)
-COLLECT_MODULE_IF_FOUND(Script opt)
-COLLECT_MODULE_IF_FOUND(ScriptTools opt)
-COLLECT_MODULE_IF_FOUND(Svg opt)
-find_package(Qt5UiTools)
-if(Qt5UiTools_FOUND)
-    COLLECT_MODULE_IF_FOUND(UiTools opt)
-else()
-    set(DISABLE_QtUiTools 1)
-endif()
-COLLECT_MODULE_IF_FOUND(WebChannel opt)
-# still forgotten:
-#COLLECT_MODULE_IF_FOUND(WebEngineCore opt)
-#COLLECT_MODULE_IF_FOUND(WebEngine opt)
-COLLECT_MODULE_IF_FOUND(WebEngineWidgets opt)
-COLLECT_MODULE_IF_FOUND(WebKit opt)
-if(NOT MSVC)
-    # right now this does not build on windows
-    COLLECT_MODULE_IF_FOUND(WebKitWidgets opt)
-else()
-    set(DISABLE_QtWebKitWidgets 1)
-ENDIF()
-COLLECT_MODULE_IF_FOUND(WebSockets opt)
+set(DISABLE_QtUiTools 1)
+set(DISABLE_QtWebKitWidgets 1)
 
 string(REGEX MATCHALL "[0-9]+" qt_version_helper "${Qt5Core_VERSION}")
 

@@ -111,7 +111,7 @@ macro(create_pyside_module
     install(TARGETS ${module_name} LIBRARY DESTINATION ${PYTHON_SITE_PACKAGES}/PySide2)
     string(TOLOWER ${module_name} lower_module_name)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/PySide2/${module_name}/pyside2_${lower_module_name}_python.h
-            DESTINATION include/PySide2${pyside2_SUFFIX}/${module_name}/)
+            DESTINATION ${ISL_PYSIDE_INCLUDE_DIR}/PySide2${pyside2_SUFFIX}/${module_name}/)
     file(GLOB typesystem_files ${CMAKE_CURRENT_SOURCE_DIR}/typesystem_*.xml ${typesystem_path})
     install(FILES ${typesystem_files} DESTINATION share/PySide2${pyside2_SUFFIX}/typesystems)
 endmacro()

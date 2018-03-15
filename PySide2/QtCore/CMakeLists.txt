@@ -10,6 +10,13 @@ else()
     set(SPECIFIC_OS_FILES "")
 endif()
 
+if(ISL_QT_NAMESPACE)
+    add_definitions(-DQT_NAMESPACE=${ISL_QT_NAMESPACE})
+endif()
+if(ISL_QT_NAMESPACE_MAC_CRC)
+    add_definitions(-DQT_NAMESPACE_MAC_CRC=${ISL_QT_NAMESPACE_MAC_CRC})
+endif()
+
 # TODO: Fix cycling dependency  when generating QDataStream operator<< for QUuid
 set (QtCore_SRC_FIXED_ME ${QtCore_GEN_DIR}/quuid_wrapper.cpp)
 
