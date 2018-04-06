@@ -44,7 +44,7 @@ find_path(PYTHON_INCLUDE_PATH
      NO_SYSTEM_ENVIRONMENT_PATH
 )
 
-file(GLOB_RECURSE _python_h_file "${PYTHON_DIRECTORY}/include/*Python.h")
+file(GLOB_RECURSE _python_h_file "${PYTHON_DIRECTORY}/*Python.h")
 get_filename_component(PYTHON_INCLUDE_PATH ${_python_h_file} PATH)
 
 if(NOT EXISTS ${PYTHON_INCLUDE_PATH})
@@ -117,12 +117,6 @@ endif()
 
 if (NOT PYTHON_SHARED_LIBRARY_SUFFIX)
   set(PYTHON_SHARED_LIBRARY_SUFFIX "${PYTHON_CONFIG_SUFFIX}")
-
-  # Append a "v" to disambiguate the python version and the pyside version in the
-  # shared library file name.
-  if (APPLE AND PYTHON_VERSION_MAJOR EQUAL 2)
-      set(PYTHON_SHARED_LIBRARY_SUFFIX "${PYTHON_SHARED_LIBRARY_SUFFIX}v")
-  endif()
 endif()
 
 
