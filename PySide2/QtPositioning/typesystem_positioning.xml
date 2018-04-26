@@ -2,7 +2,7 @@
 <!--
 /****************************************************************************
 **
-** Copyright (C) 2016 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of PySide2.
@@ -39,17 +39,42 @@
 **
 ****************************************************************************/
 -->
-<typesystem package="PySide2.QtWidgets">
-  <rejection class="*" function-name="qt_mac_set_cursor"/>
-  <rejection class="*" function-name="macMenu"/>
-
-  <primitive-type name="Qt::HANDLE" target-lang-api-name="PyObject"/>
-  <!-- Qt5: internal
-  <object-type name="QMacStyle" >
-    <enum-type name="FocusRectPolicy"/>
-    <enum-type name="WidgetSizePolicy"/>
+<typesystem package="PySide2.QtPositioning">
+  <load-typesystem name="QtCore/typesystem_core.xml" generate="no"/>
+  <value-type name="QGeoAddress"/>
+  <value-type name="QGeoAreaMonitorInfo"/>
+  <object-type name="QGeoAreaMonitorSource">
+      <enum-type name="Error"/>
+      <enum-type name="AreaMonitorFeature" flags="AreaMonitorFeatures"/>
   </object-type>
-  -->
-  <rejection class="QWidget" function-name="macCGHandle"/>
-  <rejection class="QWidget" function-name="macQDHandle"/>
+  <value-type name="QGeoLocation"/>
+  <value-type name="QGeoCircle"/>
+  <value-type name="QGeoCoordinate">
+      <enum-type name="CoordinateType"/>
+      <enum-type name="CoordinateFormat"/>
+  </value-type>
+  <value-type name="QGeoPath"/>
+  <value-type name="QGeoPolygon" since="5.10"/>
+  <value-type name="QGeoPositionInfo">
+      <enum-type name="Attribute"/>
+  </value-type>
+  <object-type name="QGeoPositionInfoSource">
+      <enum-type name="Error"/>
+      <enum-type name="PositioningMethod" flags="PositioningMethods"/>
+  </object-type>
+  <object-type name="QGeoPositionInfoSourceFactory"/>
+  <value-type name="QGeoRectangle"/>
+  <value-type name="QGeoSatelliteInfo">
+      <enum-type name="Attribute"/>
+      <enum-type name="SatelliteSystem"/>
+  </value-type>
+  <object-type name="QGeoSatelliteInfoSource">
+      <enum-type name="Error"/>
+  </object-type>
+  <value-type name="QGeoShape">
+      <enum-type name="ShapeType"/>
+  </value-type>
+  <object-type name="QNmeaPositionInfoSource">
+      <enum-type name="UpdateMode"/>
+  </object-type>
 </typesystem>

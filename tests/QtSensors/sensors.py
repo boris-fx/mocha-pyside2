@@ -1,6 +1,8 @@
+#!/usr/bin/python
+
 #############################################################################
 ##
-## Copyright (C) 2017 The Qt Company Ltd.
+## Copyright (C) 2018 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the test suite of PySide2.
@@ -26,20 +28,28 @@
 ##
 #############################################################################
 
-from __future__ import print_function
+'''Test cases for QSensor'''
 
+from PySide2.QtSensors import QSensor, QSensorReading
 import unittest
 
-from PySide2 import QtWidgets
-from PySide2 import QtWebEngineWidgets
-
-class MainTest(unittest.TestCase):
-
-    def test_WebEngineView_findText_exists(self):
-        qApp = (QtWidgets.QApplication.instance() or
-                QtWidgets.QApplication([]))
-        view = QtWebEngineWidgets.QWebEngineView()
-        view.findText("nothing")
+class QSensorTest(unittest.TestCase):
+    def test(self):
+        for sensorType in QSensor.sensorTypes():
+            identifiers = QSensor.sensorsForType(sensorType)
+            values = []
+            usedIdentifier = None
+            for identifier in identifiers:
+                sensor = QSensor(sensorType, None);
+                sensor.setIdentifier(identifier)
+                if sensor.connectToBackend():
+                    usedIdentifier = identifier
+                    reading = sensor.reading()
+                    for i in range(0, reading.valueCount()):
+                        values.append(reading.value(i))
+                    break
+            if usedIdentifier:
+                print('Sensor ', sensorType, usedIdentifier, values)
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2017 The Qt Company Ltd.
+## Copyright (C) 2018 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the test suite of PySide2.
@@ -26,20 +26,39 @@
 ##
 #############################################################################
 
-from __future__ import print_function
-
 import unittest
 
-from PySide2 import QtWidgets
-from PySide2 import QtWebEngineWidgets
+from PySide2.QtWidgets import QTreeWidget, QTreeWidgetItem, QPushButton
+from helper import UsesQApplication
 
-class MainTest(unittest.TestCase):
+class QTreeWidgetTest(UsesQApplication):
 
-    def test_WebEngineView_findText_exists(self):
-        qApp = (QtWidgets.QApplication.instance() or
-                QtWidgets.QApplication([]))
-        view = QtWebEngineWidgets.QWebEngineView()
-        view.findText("nothing")
+    # PYSIDE-73:
+    #   There was a problem when adding items to a QTreeWidget
+    #   when the Widget was being build on the method call instead
+    #   of as a separate variable.
+    #   The problem was there was not ownership transfer, so the
+    #   QTreeWidget did not own the QWidget element
+    def testSetItemWidget(self):
+
+        treeWidget = QTreeWidget()
+        treeWidget.setColumnCount(2)
+
+        item = QTreeWidgetItem(['text of column 0', ''])
+        treeWidget.insertTopLevelItem(0, item)
+        # Adding QPushButton inside the method
+        treeWidget.setItemWidget(item, 1,
+            QPushButton('Push button on column 1'))
+
+        # Getting the widget back
+        w = treeWidget.itemWidget(treeWidget.itemAt(0,1), 1)
+        self.assertIsInstance(w, QPushButton)
+
+        p = QPushButton('New independent button')
+        # Adding QPushButton object from variable
+        treeWidget.setItemWidget(item, 0, p)
+        w = treeWidget.itemWidget(treeWidget.itemAt(0,0), 0)
+        self.assertIsInstance(w, QPushButton)
 
 if __name__ == '__main__':
     unittest.main()
