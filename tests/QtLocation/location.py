@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2017 The Qt Company Ltd.
+## Copyright (C) 2018 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the test suite of PySide2.
@@ -26,20 +26,16 @@
 ##
 #############################################################################
 
-from __future__ import print_function
+'''Unit test for Location'''
 
+from PySide2.QtLocation import QGeoServiceProvider
 import unittest
 
-from PySide2 import QtWidgets
-from PySide2 import QtWebEngineWidgets
+class QLocationTestCase(unittest.TestCase):
+    def test(self):
+        geoServiceProvider = QGeoServiceProvider("none")
+        self.assertEqual(geoServiceProvider.errorString(),
+                         'The geoservices provider none is not supported.')
 
-class MainTest(unittest.TestCase):
-
-    def test_WebEngineView_findText_exists(self):
-        qApp = (QtWidgets.QApplication.instance() or
-                QtWidgets.QApplication([]))
-        view = QtWebEngineWidgets.QWebEngineView()
-        view.findText("nothing")
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -2,7 +2,7 @@
 <!--
 /****************************************************************************
 **
-** Copyright (C) 2016 The Qt Company Ltd.
+** Copyright (C) 2018 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of PySide2.
@@ -39,17 +39,31 @@
 **
 ****************************************************************************/
 -->
-<typesystem package="PySide2.QtWidgets">
-  <rejection class="*" function-name="qt_mac_set_cursor"/>
-  <rejection class="*" function-name="macMenu"/>
+<typesystem package="PySide2.QtWebEngineCore">
+  <load-typesystem name="QtCore/typesystem_core.xml" generate="no"/>
 
-  <primitive-type name="Qt::HANDLE" target-lang-api-name="PyObject"/>
-  <!-- Qt5: internal
-  <object-type name="QMacStyle" >
-    <enum-type name="FocusRectPolicy"/>
-    <enum-type name="WidgetSizePolicy"/>
+  <object-type name="QWebEngineCookieStore"/>
+
+  <object-type name="QWebEngineHttpRequest">
+    <enum-type name="Method"/>
+    <modify-function signature="QWebEngineHttpRequest(const QUrl &amp;, const QWebEngineHttpRequest::Method &amp;)">
+      <modify-argument index="2">
+        <replace-type modified-type="QWebEngineHttpRequest::Method"/>
+      </modify-argument>
+    </modify-function>
   </object-type>
-  -->
-  <rejection class="QWidget" function-name="macCGHandle"/>
-  <rejection class="QWidget" function-name="macQDHandle"/>
+
+  <object-type name="QWebEngineUrlRequestInfo">
+    <enum-type name="NavigationType"/>
+    <enum-type name="ResourceType"/>
+  </object-type>
+
+  <object-type name="QWebEngineUrlRequestInterceptor"/>
+
+  <object-type name="QWebEngineUrlRequestJob">
+    <enum-type name="Error"/>
+  </object-type>
+
+  <object-type name="QWebEngineUrlSchemeHandler"/>
+
 </typesystem>

@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2017 The Qt Company Ltd.
+## Copyright (C) 2018 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the test suite of PySide2.
@@ -26,20 +26,51 @@
 ##
 #############################################################################
 
-from __future__ import print_function
+''' Test cases related to QGraphicsItem and subclasses'''
 
 import unittest
 
-from PySide2 import QtWidgets
-from PySide2 import QtWebEngineWidgets
+from PySide2.QtWidgets import QGraphicsObject, QGraphicsWidget
+from PySide2.QtCore import QRectF
 
-class MainTest(unittest.TestCase):
+from helper import UsesQApplication
 
-    def test_WebEngineView_findText_exists(self):
-        qApp = (QtWidgets.QApplication.instance() or
-                QtWidgets.QApplication([]))
-        view = QtWebEngineWidgets.QWebEngineView()
-        view.findText("nothing")
+class GObjA(QGraphicsObject):
+    def paint(self, *args):
+        pass
+
+    def boundingRect(self):
+        return QRectF()
+
+    def itemChange(self, *args):
+        return QGraphicsObject.itemChange(self, *args)
+
+class GObjB(QGraphicsObject):
+    def paint(self, *args):
+        pass
+
+    def boundingRect(self):
+        return QRectF()
+
+class QGraphicsObjectReimpl(UsesQApplication):
+    '''Test case for reimplementing QGraphicsObject'''
+
+    def testReimplementationTypes(self):
+        w = QGraphicsWidget()
+
+        # PYSIDE-86:
+        #   This case failed because GObjA was reimplementing
+        #   the method itemChange() from QGraphicsItem,
+        #   and then the QVariant was not associated with
+        #   a QGraphicsItem but a QObjectItem because the base
+        #   class was a QObject.
+        gobjA = GObjA()
+        gobjA.setParentItem(w)
+        self.assertIs(type(w), type(gobjA.parentItem()))
+
+        gobjB = GObjB()
+        gobjB.setParentItem(w)
+        self.assertIs(type(w), type(gobjB.parentItem()))
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,6 +1,6 @@
 #############################################################################
 ##
-## Copyright (C) 2017 The Qt Company Ltd.
+## Copyright (C) 2018 The Qt Company Ltd.
 ## Contact: https://www.qt.io/licensing/
 ##
 ## This file is part of the test suite of PySide2.
@@ -26,20 +26,18 @@
 ##
 #############################################################################
 
-from __future__ import print_function
+'''Unit test for Positioning'''
 
+from PySide2.QtPositioning import QGeoPositionInfoSource
 import unittest
 
-from PySide2 import QtWidgets
-from PySide2 import QtWebEngineWidgets
+class QPositioningTestCase(unittest.TestCase):
+    def test(self):
+        source = QGeoPositionInfoSource.createDefaultSource(None)
+        self.assertTrue(source is not None)
+        name = source.sourceName()
+        print('QtPositioning source: {}'.format(name))
+        self.assertTrue(name)
 
-class MainTest(unittest.TestCase):
-
-    def test_WebEngineView_findText_exists(self):
-        qApp = (QtWidgets.QApplication.instance() or
-                QtWidgets.QApplication([]))
-        view = QtWebEngineWidgets.QWebEngineView()
-        view.findText("nothing")
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
