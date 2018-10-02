@@ -60,7 +60,7 @@ static PyObject*    functionCall(PyObject*, PyObject*, PyObject*);
 
 PyTypeObject PySideMetaFunctionType = {
     PyVarObject_HEAD_INIT(0, 0)
-    /*tp_name*/             "PySide.MetaFunction",
+    /*tp_name*/             "PySide2.MetaFunction",
     /*tp_basicsize*/        sizeof(PySideMetaFunction),
     /*tp_itemsize*/         0,
     /*tp_dealloc*/          0,
@@ -89,7 +89,7 @@ PyTypeObject PySideMetaFunctionType = {
     /*tp_methods*/          0,
     /*tp_members*/          0,
     /*tp_getset*/           0,
-    /*tp_base*/             &PyType_Type,
+    /*tp_base*/             0,
     /*tp_dict*/             0,
     /*tp_descr_get*/        0,
     /*tp_descr_set*/        0,
